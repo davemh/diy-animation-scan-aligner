@@ -1,10 +1,10 @@
-# DIY Animation Club Scan Aligner
-DIY Animation Scan Aligner is an auto-alignment tool for animators who work on paper and use a standard 3-hole punch and pegbar with round pegs, rather than ACME. It is meant to address a gap in available tools for auto-alignment of scanned drawings on paper -- none of which were designed with standard 3-hole punch in mind.
+# DIY Animation Scan Aligner
+DIY Animation Scan Aligner is an auto-alignment tool for animators who work on paper and use a standard 3-hole punch and pegbar with round pegs, rather than ACME. It is meant to address a gap in available tools for auto-alignment of scanned drawings on paper -- none of which were designed with standard 3-hole punch in mind. Brought to you by <a href="https://diyanimation.com">DIY Animation Club.</a>.
 
 ## Assumptions
-- Optimized for a max resolution of 600 dpi, on standard 8.5" × 11" paper
-- Assumes _top_ as your pegbar position (Japan industry standard), but also supports bottom pegs (see Usage)
-- Expects a numerically-named sequence of scanned pages, placed into a subdirectory called **scans/**
+- This tool is optimized for a max resolution of 600 dpi, and assumes you are working on standard US Letter (8.5" × 11") paper
+- It assumes _top_ as your pegbar position (Japan industry standard), but also supports bottom pegs (see Usage)
+- It expects a numerically-named sequence of scanned pages, placed into a subdirectory called **scans/**
 
 ## Features
 - Auto-detects **3-hole punch pattern** (not ACME -- for that, you have OLM Peghole Stabilizer)

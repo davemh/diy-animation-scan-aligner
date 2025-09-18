@@ -61,7 +61,7 @@ This will:
   Default: `bottom`. Choose whether peg holes are at the top or bottom of the page.  
 
 - `--debug`  
-  Instead of clean aligned frames, output uncorrected image with **debug overlays** showing:  
+  Instead of clean aligned frames, output aligned frames with **debug overlays** showing:  
   - 🔵 detected holes  
   - 🔴 ideal/reference holes  
   - 🟢 transformed holes  

@@ -110,7 +110,7 @@ frame002.png: ERROR - Failed to detect three holes on the page
 - Works best with **high-contrast scans** (peg holes clearly darker than paper).
 - Using a production or feed scanner, you should end up with solid black pegholes
 - Using a combo printer/scanner with ADF, you may need to add a strip of black electrical tape to the inside lid of your scanner bed, positioned so it sits directly behind the pegholes during the scanning process.
-- Using a flatbed scanner, you may need to place a strip of black paper behind your pegholes to ensure that they end up looking solid black. Of course, this tool really pairs best with ADF, in that it is meant to save you scanning time.
+- Using a flatbed scanner, you may need to place a strip of black paper behind your pegholes to ensure that they end up looking solid black. Keep in mind that this tool is meant to save you time by unlocking batch scanning as an option. If you're already scanning one page at a time, you might as well just use a pegbar.
 
 ---
 

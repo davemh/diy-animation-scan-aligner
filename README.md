@@ -17,6 +17,17 @@ DIY Animation Scan Aligner is an auto-alignment tool for animators who work on p
 
 ---
 
+## Requirements
+- Python 3.8+
+- OpenCV
+- NumPy
+- tqdm (progress bar)
+
+Install dependencies with:
+
+```bash
+pip install -r requirements.txt
+
 ## Installation
 
 Clone the repo and install dependencies:

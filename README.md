@@ -107,4 +107,4 @@ frame002.png: ERROR - Failed to detect three holes on the page
 GNU General Public License v3.0
 
 ## Roadmap
-For now, this is a command-line tool. The next step is to get feedback from beta testers, bug-shoot, then add a GUI.
+For now, this is a command-line tool that has only been tested and shown to work with _blank_ pages. The next step is to get feedback from beta testers using scans of 3-hole-punches pages with fully animated linework, and see what bugs pop up.

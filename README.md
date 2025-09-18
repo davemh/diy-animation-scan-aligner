@@ -7,7 +7,7 @@ DIY Animation Scan Aligner is an auto-alignment tool for animators who work on p
 - It expects a numerically-named sequence of scanned pages, placed into a subdirectory called **scans/**
 
 ## Features
-- Auto-detects **3-hole punch pattern** (not ACME -- for that, you have OLM Peghole Stabilizer)
+- Auto-detects **3-hole punch pattern** (not ACME -- for that, you have the amazing <a href="https://www.olm.co.jp/post/olm-peg-hole-stabilizer-updated">OLM Peghole Stabilizer</a>)
 - Auto-rotates pages that are upside-down or sideways
 - Aligns pegholes across all pages, via translation and rotation (will not adjust scale)
 - Outputs an aligned version of your scans as a PNG sequence to a subdirectory called **aligned/**

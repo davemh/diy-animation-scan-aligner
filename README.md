@@ -33,8 +33,8 @@ pip install -r requirements.txt
 Clone the repo and install dependencies:
 
 ```bash
-git clone https://github.com/yourusername/diyAnimationClub_scanAligner.git
-cd diyAnimationClub_scanAligner
+git clone https://github.com/yourusername/diy-animation-scan-aligner.git
+cd diy-animation-scan-aligner
 
 # Create a virtual environment (recommended)
 python3 -m venv venv

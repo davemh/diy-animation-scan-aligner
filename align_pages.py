@@ -1,4 +1,18 @@
 #!/usr/bin/env python3
+"""
+align_pages.py — part of diy-animation-scan-aligner
+
+Align scanned animation pages by detecting three-hole pegbar
+references and applying a rigid affine transform so all pages
+are consistently registered.
+
+Usage:
+    python align_pages.py <input_dir> <output_dir> [--holes-position top|bottom] [--debug] [--preview]
+"""
+
+__project__ = "diy-animation-scan-aligner"
+__version__ = "0.1.0"
+
 import cv2
 import numpy as np
 import os

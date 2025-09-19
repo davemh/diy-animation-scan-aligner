@@ -1,148 +1,112 @@
-import tkinter as tk
-from tkinter import filedialog, messagebox
-import threading
 import os
-import align_pages
+import sys
+import threading
+import tkinter as tk
+from tkinter import filedialog, messagebox, ttk
+import subprocess
 
 
 class AlignGUI:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("DIY Animation Scan Aligner")
+    def __init__(self, master):
+        self.master = master
+        master.title("DIY Animation Scan Aligner")
 
-        # Cancel flag
-        self.cancel_flag = threading.Event()
+        # File/folder variables
+        self.input_dir = tk.StringVar()
+        self.output_dir = tk.StringVar()
 
-        # Peg hole position
-        self.peg_var = tk.StringVar(value="top")
-        tk.Label(root, text="Peg hole position:").pack(anchor="w", padx=10, pady=5)
-        tk.Radiobutton(root, text="Top", variable=self.peg_var, value="top").pack(
-            anchor="w", padx=20
-        )
-        tk.Radiobutton(root, text="Left", variable=self.peg_var, value="left").pack(
-            anchor="w", padx=20
-        )
+        # Create the GUI layout
+        self.create_widgets()
 
-        # Source directory
-        self.src_var = tk.StringVar(value="scans")
-        tk.Label(root, text="Source directory:").pack(anchor="w", padx=10, pady=5)
-        src_frame = tk.Frame(root)
-        src_frame.pack(fill="x", padx=10)
-        tk.Entry(src_frame, textvariable=self.src_var, width=40).pack(side="left")
-        tk.Button(src_frame, text="Browse", command=self.browse_src).pack(side="left")
+    def create_widgets(self):
+        # Input directory
+        input_frame = ttk.Frame(self.master, padding="10")
+        input_frame.grid(row=0, column=0, sticky="ew")
+        ttk.Label(input_frame, text="Input folder:").grid(row=0, column=0, sticky="w")
+        ttk.Entry(input_frame, textvariable=self.input_dir, width=50).grid(row=0, column=1, sticky="ew")
+        ttk.Button(input_frame, text="Browse", command=self.browse_input).grid(row=0, column=2, padx=5)
 
-        # Destination directory
-        self.dst_var = tk.StringVar(value="aligned")
-        tk.Label(root, text="Destination directory:").pack(anchor="w", padx=10, pady=5)
-        dst_frame = tk.Frame(root)
-        dst_frame.pack(fill="x", padx=10)
-        tk.Entry(dst_frame, textvariable=self.dst_var, width=40).pack(side="left")
-        tk.Button(dst_frame, text="Browse", command=self.browse_dst).pack(side="left")
+        # Output directory
+        output_frame = ttk.Frame(self.master, padding="10")
+        output_frame.grid(row=1, column=0, sticky="ew")
+        ttk.Label(output_frame, text="Output folder:").grid(row=0, column=0, sticky="w")
+        ttk.Entry(output_frame, textvariable=self.output_dir, width=50).grid(row=0, column=1, sticky="ew")
+        ttk.Button(output_frame, text="Browse", command=self.browse_output).grid(row=0, column=2, padx=5)
 
-        # Progress
-        self.progress_var = tk.DoubleVar(value=0)
-        self.progress = tk.Scale(
-            root,
-            variable=self.progress_var,
-            from_=0,
-            to=100,
-            orient="horizontal",
-            length=300,
-            state="disabled",
-            label="Progress",
-        )
-        self.progress.pack(pady=10)
+        # Run button
+        run_frame = ttk.Frame(self.master, padding="10")
+        run_frame.grid(row=2, column=0, sticky="ew")
+        self.run_button = ttk.Button(run_frame, text="Run Alignment", command=self.run_alignment)
+        self.run_button.grid(row=0, column=0, pady=10)
 
-        # Status label
-        self.status_var = tk.StringVar(value="Idle")
-        tk.Label(root, textvariable=self.status_var).pack(pady=5)
+        # Progress text
+        progress_frame = ttk.Frame(self.master, padding="10")
+        progress_frame.grid(row=3, column=0, sticky="nsew")
+        self.progress_text = tk.Text(progress_frame, wrap="word", height=15, width=80)
+        self.progress_text.grid(row=0, column=0, sticky="nsew")
+        scrollbar = ttk.Scrollbar(progress_frame, command=self.progress_text.yview)
+        scrollbar.grid(row=0, column=1, sticky="ns")
+        self.progress_text['yscrollcommand'] = scrollbar.set
 
-        # Buttons
-        btn_frame = tk.Frame(root)
-        btn_frame.pack(pady=10)
+        self.master.grid_rowconfigure(3, weight=1)
+        self.master.grid_columnconfigure(0, weight=1)
 
-        self.run_button = tk.Button(
-            btn_frame,
-            text="Run Alignment",
-            command=self.run_alignment,
-            bg="#e0e0e0",
-            fg="black",
-            activebackground="#d0d0d0",
-        )
-        self.run_button.pack(side="left", padx=10)
+    def browse_input(self):
+        folder = filedialog.askdirectory()
+        if folder:
+            self.input_dir.set(folder)
 
-        self.cancel_button = tk.Button(
-            btn_frame,
-            text="Cancel",
-            command=self.cancel_alignment,
-            bg="#e0e0e0",
-            fg="black",
-            activebackground="#d0d0d0",
-        )
-        self.cancel_button.pack(side="left", padx=10)
-
-    def browse_src(self):
-        directory = filedialog.askdirectory(initialdir=self.src_var.get())
-        if directory:
-            self.src_var.set(directory)
-
-    def browse_dst(self):
-        directory = filedialog.askdirectory(initialdir=self.dst_var.get())
-        if directory:
-            self.dst_var.set(directory)
+    def browse_output(self):
+        folder = filedialog.askdirectory()
+        if folder:
+            self.output_dir.set(folder)
 
     def run_alignment(self):
-        src = self.src_var.get()
-        dst = self.dst_var.get()
-        peg_pos = self.peg_var.get()
+        input_dir = self.input_dir.get()
+        output_dir = self.output_dir.get()
 
-        if not os.path.isdir(src):
-            messagebox.showerror("Error", f"Source folder does not exist: {src}")
+        if not input_dir or not output_dir:
+            messagebox.showerror("Error", "Please select both input and output folders.")
             return
 
-        os.makedirs(dst, exist_ok=True)
+        self.run_button.config(state="disabled")
+        self.progress_text.delete(1.0, tk.END)
 
-        self.cancel_flag.clear()
-        self.status_var.set("Running...")
-        self.progress_var.set(0)
-
-        thread = threading.Thread(
-            target=self.worker, args=(src, dst, peg_pos), daemon=True
-        )
+        thread = threading.Thread(target=self.run_alignment_thread, args=(input_dir, output_dir))
         thread.start()
 
-    def worker(self, src, dst, peg_pos):
-        def update_progress(i, total, fname):
-            if self.cancel_flag.is_set():
-                raise RuntimeError("Alignment cancelled by user.")
-            self.progress_var.set(i / total * 100)
-            self.status_var.set(f"Processing {fname} ({i}/{total})")
-            self.root.update_idletasks()
-
+    def run_alignment_thread(self, input_dir, output_dir):
         try:
-            align_pages.process_folder(
-                src,
-                dst,
-                holes_position=peg_pos,
-                debug=False,
-                preview=False,
-                progress_callback=update_progress,
-            )
-            if not self.cancel_flag.is_set():
-                self.status_var.set("Done")
-                self.progress_var.set(100)
-                messagebox.showinfo("Done", "Alignment complete!")
-        except Exception as e:
-            if str(e) == "Alignment cancelled by user.":
-                self.status_var.set("Cancelled")
-                messagebox.showinfo("Cancelled", "Alignment was cancelled.")
-            else:
-                self.status_var.set("Error")
-                messagebox.showerror("Error", str(e))
+            # Ensure align_pages.py runs in the same directory as this GUI
+            script_path = os.path.join(os.path.dirname(sys.argv[0]), "align_pages.py")
 
-    def cancel_alignment(self):
-        self.cancel_flag.set()
-        self.status_var.set("Cancelling...")
+            process = subprocess.Popen(
+                [sys.executable, script_path, input_dir, output_dir],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+
+            for line in process.stdout:
+                self.append_progress(line)
+
+            process.wait()
+
+            if process.returncode == 0:
+                self.append_progress("\nAlignment completed successfully.\n")
+            else:
+                self.append_progress("\nError: Alignment process failed.\n")
+                for line in process.stderr:
+                    self.append_progress(line)
+
+        except Exception as e:
+            self.append_progress(f"\nUnexpected error: {e}\n")
+        finally:
+            self.run_button.config(state="normal")
+
+    def append_progress(self, text):
+        self.progress_text.insert(tk.END, text)
+        self.progress_text.see(tk.END)
 
 
 if __name__ == "__main__":

@@ -12,13 +12,13 @@ class AlignGUI:
         self.root = root
         self.root.title("DIY Animation Scan Aligner")
 
-        # Source folder
+        # Source folder where raw scans are located.
         tk.Label(root, text="Source Directory:").grid(row=0, column=0, sticky="e")
         self.src_var = tk.StringVar(value="scans/")
         tk.Entry(root, textvariable=self.src_var, width=40).grid(row=0, column=1)
         tk.Button(root, text="Browse", command=self.browse_src).grid(row=0, column=2)
 
-        # Destination folder
+        # Destination folder where aligned pngs should be saved
         tk.Label(root, text="Destination Directory:").grid(row=1, column=0, sticky="e")
         self.dst_var = tk.StringVar(value="aligned/")
         tk.Entry(root, textvariable=self.dst_var, width=40).grid(row=1, column=1)

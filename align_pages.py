@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 # ---------------- Hole Detection ---------------- #
 def detect_three_holes(image):
-    """Detects 3 circular holes in the scan. Returns centers as list of (x,y)."""
+    """Detects 3 circular holes in the scan using Hough Circle Transform. Returns centers as list of (x,y)."""
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(gray, (9, 9), 2)
     circles = cv2.HoughCircles(

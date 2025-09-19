@@ -1,6 +1,6 @@
 #!/bin/zsh
 # build_mac.sh
-# Build the DIY Animation Scan Aligner macOS .app
+# Build the latest version of the DIY Animation Scan Aligner macOS .app
 
 APP_NAME="DIY Animation Scan Aligner"
 ICON_PATH="icons/align_icon.icns"

@@ -1,4 +1,0 @@
-([('DIY Animation Scan Aligner',
-   '/Users/davemhmba/Documents/GitHub/diy-animation-scan-aligner/dist/DIY '
-   'Animation Scan Aligner',
-   'EXECUTABLE')],)

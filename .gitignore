@@ -2,6 +2,8 @@ venv/
 build/
 notes/
 __pycache__/
+dist/DIY Animation Scan Aligner
+dist/DIY Animation Scan Aligner.app
 *.pyc
 *.pyo
 *.pyd

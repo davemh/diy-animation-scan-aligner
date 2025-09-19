@@ -1,90 +1,111 @@
+#!/usr/bin/env python3
 import cv2
 import numpy as np
 import os
-import sys
+from tqdm import tqdm
 
-
-def detect_punch_holes(image_path):
-    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    if image is None:
-        raise ValueError(f"Could not read image: {image_path}")
-
-    # Blur and threshold
-    blurred = cv2.GaussianBlur(image, (5, 5), 0)
-    _, thresh = cv2.threshold(blurred, 50, 255, cv2.THRESH_BINARY_INV)
-
-    # Find contours
-    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-    holes = []
-    for c in contours:
-        area = cv2.contourArea(c)
-        if 50 < area < 5000:  # reasonable size range for punch holes
-            M = cv2.moments(c)
-            if M["m00"] != 0:
-                cx = int(M["m10"] / M["m00"])
-                cy = int(M["m01"] / M["m00"])
-                holes.append((cx, cy))
-
-    if len(holes) < 2:
-        raise ValueError("Could not detect punch holes")
-
-    # Sort holes by y coordinate (top and bottom)
-    holes = sorted(holes, key=lambda x: x[1])
-    top_hole, bottom_hole = holes[0], holes[-1]
-
-    return {"top": top_hole, "bottom": bottom_hole}
-
-
-def align_image(image_path, ref_holes, output_path):
-    image = cv2.imread(image_path)
-    if image is None:
-        raise ValueError(f"Could not read image: {image_path}")
-
-    detected = detect_punch_holes(image_path)
-
-    src_points = np.float32([detected["top"], detected["bottom"]])
-    dst_points = np.float32([ref_holes["top"], ref_holes["bottom"]])
-
-    # Calculate affine transform
-    matrix = cv2.getAffineTransform(
-        np.vstack([src_points, [src_points[1][0] + 1, src_points[1][1]]]),
-        np.vstack([dst_points, [dst_points[1][0] + 1, dst_points[1][1]]])
+# ---------------- Hole Detection ---------------- #
+def detect_three_holes(image):
+    """Detects 3 circular holes in the scan. Returns centers as list of (x,y)."""
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    blur = cv2.GaussianBlur(gray, (9, 9), 2)
+    circles = cv2.HoughCircles(
+        blur,
+        cv2.HOUGH_GRADIENT,
+        dp=1.2,
+        minDist=200,
+        param1=50,
+        param2=30,
+        minRadius=20,
+        maxRadius=80
     )
+    if circles is None or len(circles[0]) < 3:
+        raise RuntimeError("Could not detect punch holes on the page")
+    circles = np.round(circles[0, :]).astype("int")
+    # sort left to right
+    circles = sorted(circles, key=lambda c: c[0])
+    return [(c[0], c[1]) for c in circles[:3]]
 
-    aligned = cv2.warpAffine(image, matrix, (image.shape[1], image.shape[0]))
-    cv2.imwrite(output_path, aligned)
+# ---------------- Reference Builder ---------------- #
+def build_reference(holes, img_shape, holes_position="top"):
+    """Rotate holes so they are horizontal, return as reference positions."""
+    (h, w) = img_shape[:2]
+    holes = np.array(holes, dtype=np.float32)
 
+    dx = holes[2][0] - holes[0][0]
+    dy = holes[2][1] - holes[0][1]
+    angle = np.degrees(np.arctan2(dy, dx))
+    rot_mat = cv2.getRotationMatrix2D(tuple(holes[1]), -angle, 1.0)
+    rotated = cv2.transform(np.array([holes]), rot_mat)[0]
 
-def process_folder(input_dir, output_dir):
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    if holes_position == "top":
+        target_y = int(0.1 * h)
+    else:
+        target_y = int(0.9 * h)
+    y_offset = target_y - np.mean(rotated[:, 1])
+    rotated[:, 1] += y_offset
 
-    files = [f for f in os.listdir(input_dir) if f.lower().endswith((".png", ".jpg", ".jpeg"))]
+    return rotated
+
+# ---------------- Alignment ---------------- #
+def align_page(image, detected, reference):
+    """Align one page to reference using rigid affine transform."""
+    src = np.array(detected, dtype=np.float32)
+    dst = np.array(reference, dtype=np.float32)
+
+    M, _ = cv2.estimateAffinePartial2D(src, dst, method=cv2.LMEDS)
+    if M is None:
+        raise RuntimeError("Failed to compute alignment transform")
+
+    aligned = cv2.warpAffine(image, M, (image.shape[1], image.shape[0]),
+                             flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+
+    return aligned
+
+# ---------------- Main Processing ---------------- #
+def process_folder(input_dir, output_dir, holes_position="top", debug=False, preview=False, preview_delay=500):
+    files = sorted([f for f in os.listdir(input_dir)
+                    if f.lower().endswith(('.png', '.jpg', '.jpeg', '.tif', '.tiff'))])
     if not files:
-        raise ValueError("No image files found in input directory")
+        print("No images found in input folder")
+        return
 
-    ref_image = os.path.join(input_dir, files[0])
-    ref_holes = detect_punch_holes(ref_image)
+    os.makedirs(output_dir, exist_ok=True)
+    reference = None
 
-    for f in files:
-        in_path = os.path.join(input_dir, f)
-        out_path = os.path.join(output_dir, f)
-        align_image(in_path, ref_holes, out_path)
-        print(f"Aligned {f}")
+    for fname in tqdm(files, desc="Processing pages"):
+        in_path = os.path.join(input_dir, fname)
+        img = cv2.imread(in_path)
+        if img is None:
+            print(f"Warning: failed to read {fname}")
+            continue
 
+        try:
+            holes = detect_three_holes(img)
+        except RuntimeError as e:
+            print(f"Skipping {fname}: {e}")
+            continue
 
-if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: python align_pages.py <input_dir> <output_dir>")
-        sys.exit(1)
+        if reference is None:
+            reference = build_reference(holes, img.shape, holes_position)
 
-    input_dir = sys.argv[1]
-    output_dir = sys.argv[2]
+        try:
+            aligned = align_page(img, holes, reference)
+        except RuntimeError as e:
+            print(f"Skipping {fname}: {e}")
+            continue
 
-    try:
-        process_folder(input_dir, output_dir)
-        print("All images aligned successfully.")
-    except Exception as e:
-        print(f"Error: {e}")
-        sys.exit(1)
+        out_name = os.path.splitext(fname)[0] + ".png"
+        cv2.imwrite(os.path.join(output_dir, out_name), aligned)
+
+        if preview:
+            disp = aligned.copy()
+            cv2.putText(disp, fname, (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 4)
+            cv2.putText(disp, fname, (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2)
+            cv2.imshow("Preview", disp)
+            key = cv2.waitKey(preview_delay) & 0xFF
+            if key == 27:  # ESC
+                break
+
+    if preview:
+        cv2.destroyAllWindows()

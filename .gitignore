@@ -2,9 +2,9 @@ venv/
 build/
 notes/
 __pycache__/
-dist/DIY Animation Scan Aligner
-dist/DIY Animation Scan Aligner.app
+dist/DIY Animation Scan Aligner/
 *.pyc
 *.pyo
 *.pyd
 .DS_Store
+build_app.sh

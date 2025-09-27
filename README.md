@@ -138,4 +138,4 @@ frame002.png: ERROR - Failed to detect three holes on the page
 GNU General Public License v3.0
 
 ## Roadmap
-For now, this is a command-line tool that has only been tested and shown to work with _blank_ pages. The next step is to get feedback from beta testers using scans of 3-hole-punches pages with fully animated linework, and see what bugs pop up. I'm also in the process of making a GUI for the MacOS version. In the interest of shipping a working version, this MacOS version may launch without the preview and debug features.
+For now, this tool has only been tested and shown to work with _blank_, 3-hole punched pages. The next step is to get feedback from beta testers using scans of 3-hole-punches pages with fully animated linework, and see what bugs pop up. In the interest of shipping a working version, the GUI version for MacOS version does not support the preview and debug features of the command-line tool.

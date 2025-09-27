@@ -64,10 +64,11 @@ Dependencies are:
 ### GUI Usage (MacOS only)
 ![v1.0.0 GUI](./screenshots/screenshot_gui-v1.0.0.png)
 1. Select a source directory that contains your scans.
-2. Select a destination directory, where the output should be saved. 
-3. Click _Run Alignment_
+2. Select a destination directory, where the output should be saved.
+3. Select peg hole position (top or bottom). Prior to running alignment, the tool will run an orientation check, using this choice to determine which pages need to be rotated (90, 180, or 270 degrees) to correct orientation.
+4. Click _Run Alignment_.
 
-The tool will begin by duplicating the scans in your source directory and placing them in the destination directory, before alignment begins. Use the progress bar to determine batch completion, as the mere presence of files in the destination directory does not mean alignment has completed.
+The tool will begin by duplicating the scans in your source directory and placing them into the destination directory (before alignment begins). Use the progress bar to determine batch completion, as the mere presence of files in the destination directory does not mean alignment has completed.
 
 4. Browse to the destination directory to retrieve your aligned scans.
 

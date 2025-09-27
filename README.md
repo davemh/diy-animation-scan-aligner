@@ -4,20 +4,27 @@ DIY Animation Scan Aligner is an auto-alignment tool for animators who work on p
 ## Assumptions
 - This tool is optimized for a max resolution of 600 dpi, and assumes you are working on standard US Letter (8.5" × 11") paper
 - It assumes _top_ as your pegbar position (Japan industry standard), but also supports bottom pegs (see Usage)
-- It expects a numerically-named sequence of scanned pages, placed into a subdirectory called **scans/**
+- It expects a numerically-named image sequence of scanned pages, placed into a subdirectory called **scans/**
 
 ## Features
 - Auto-detects **3-hole punch pattern** (not ACME -- for that, you have the amazing <a href="https://www.olm.co.jp/post/olm-peg-hole-stabilizer-updated">OLM Peghole Stabilizer</a>)
 - Auto-rotates pages that are upside-down or sideways
-- Aligns pegholes across all pages, via translation and rotation (will not adjust scale)
+- Aligns pegholes across all pages, via translation and rotation (comparable to 2d image stabilization -- will not adjust scale)
 - Outputs an aligned version of your scans as a PNG sequence to a subdirectory called **aligned/**
+- The output folder will also include a log in `report.txt`, including any skipped pages (in case of errors)
+
+### Command-line only features
 - **Preview playback** mode shows you pages as they are processed (press ESC to quit)
 - **Debug overlay** mode displays the detected peg hole location vs ideal peghole location
-- The output folder will also include a log in `report.txt`, including any skipped pages (in case of errors)
 
 ---
 
 ## Requirements
+
+### GUI Version
+- MacOS
+
+### Command-line version (ignore if using GUi Version only)
 - Python 3.8+
 - OpenCV
 - NumPy
@@ -54,6 +61,19 @@ Dependencies are:
 
 ## Usage
 
+### GUI Usage
+1. Select a source directory that contains your scans.
+2. Select a destination directory, where the output should be saved. 
+![v1.0.0 GUI](./screenshots/screenshot_gui-v1.0.0.png)
+
+3. Click _Run Alignment_
+
+The tool will begin by duplicating the scans in your source directory and placing them in the destination directory, before alignment begins. Use the progress bar to determine batch completion, as the mere presence of files in the destination directory does not mean alignment has completed.
+
+4. Browse to the destination directory to retrieve your aligned scans.
+
+### Command-line Usage
+
 Basic command:
 
 ```bash
@@ -66,7 +86,7 @@ This will:
 - Write aligned PNGs to `aligned/`
 - Write a `report.txt` log into `aligned/`
 
-### Options
+### Command-line Options
 
 - `--holes-position top|bottom`  
   Default: `bottom`. Choose whether peg holes are at the top or bottom of the page.  

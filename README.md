@@ -61,11 +61,10 @@ Dependencies are:
 
 ## Usage
 
-### GUI Usage
+### GUI Usage (MacOS only)
+![v1.0.0 GUI](./screenshots/screenshot_gui-v1.0.0.png)
 1. Select a source directory that contains your scans.
 2. Select a destination directory, where the output should be saved. 
-![v1.0.0 GUI](./screenshots/screenshot_gui-v1.0.0.png)
-
 3. Click _Run Alignment_
 
 The tool will begin by duplicating the scans in your source directory and placing them in the destination directory, before alignment begins. Use the progress bar to determine batch completion, as the mere presence of files in the destination directory does not mean alignment has completed.

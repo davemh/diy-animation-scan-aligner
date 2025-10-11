@@ -71,7 +71,7 @@ Dependencies are:
 The tool will begin by duplicating the scans in your source directory and placing them into the destination directory (before alignment begins). Use the progress bar to determine batch completion, as the mere presence of files in the destination directory does not mean alignment has completed.
 
 4. Browse to the destination directory to retrieve your aligned scans.
-
+---
 ### Command-line Usage
 
 Basic command:
@@ -86,7 +86,7 @@ This will:
 - Write aligned PNGs to `aligned/`
 - Write a `report.txt` log into `aligned/`
 
-### Command-line Options
+#### Command-line Options
 
 - `--holes-position top|bottom`  
   Default: `bottom`. Choose whether peg holes are at the top or bottom of the page.  
@@ -103,7 +103,7 @@ This will:
 - `--preview-delay <ms>`  
   Set time in milliseconds between preview frames (default: 500 aka .5 seconds).
 
-### Example
+##### Example Command
 
 ```bash
 python align_pages.py scans/ aligned/ --holes-position bottom --debug --preview --preview-delay 250
@@ -111,7 +111,7 @@ python align_pages.py scans/ aligned/ --holes-position bottom --debug --preview 
 
 ---
 
-## Output
+#### Output
 - `aligned/` folder with PNGs
 - `aligned/report.txt` containing success/error logs for each frame
 

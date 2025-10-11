@@ -4,7 +4,7 @@ DIY Animation Scan Aligner is an auto-alignment tool for animators who work on p
 ## Assumptions
 - This tool is optimized for a max resolution of 600 dpi, and assumes you are working on standard US Letter (8.5" × 11") paper
 - It assumes _top_ as your pegbar position (Japan industry standard), but also supports bottom pegs (see Usage)
-- It expects a numerically-named image sequence of scanned pages, placed into a subdirectory called **scans/**
+- It expects a numerically-named image sequence of scanned pages (in **PNG**, **TIFF** or **JPG** format), placed into a subdirectory called **scans/**
 
 ## Features
 - Auto-detects **3-hole punch pattern** (not ACME -- for that, you have the amazing <a href="https://www.olm.co.jp/post/olm-peg-hole-stabilizer-updated">OLM Peghole Stabilizer</a>)

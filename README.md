@@ -4,7 +4,7 @@ DIY Animation Scan Aligner is an auto-alignment tool for animators who work on p
 ## Assumptions
 - This tool is optimized for a max resolution of 600 dpi, and assumes you are working on standard US Letter (8.5" × 11") paper
 - It assumes _top_ as your pegbar position (Japan industry standard), but also supports bottom pegs (see Usage)
-- It expects a numerically-named image sequence of scanned pages, placed into a subdirectory called **scans/**
+- It expects a numerically-named image sequence of scanned pages (in **PNG**, **TIFF** or **JPG** format), placed into a subdirectory called **scans/**
 
 ## Features
 - Auto-detects **3-hole punch pattern** (not ACME -- for that, you have the amazing <a href="https://www.olm.co.jp/post/olm-peg-hole-stabilizer-updated">OLM Peghole Stabilizer</a>)
@@ -64,13 +64,14 @@ Dependencies are:
 ### GUI Usage (MacOS only)
 ![v1.0.0 GUI](./screenshots/screenshot_gui-v1.0.0.png)
 1. Select a source directory that contains your scans.
-2. Select a destination directory, where the output should be saved. 
-3. Click _Run Alignment_
+2. Select a destination directory, where the output should be saved.
+3. Select peg hole position (top or bottom). Prior to running alignment, the tool will run an orientation check, using this choice to determine which pages need to be rotated (90, 180, or 270 degrees) to correct orientation.
+4. Click _Run Alignment_.
 
-The tool will begin by duplicating the scans in your source directory and placing them in the destination directory, before alignment begins. Use the progress bar to determine batch completion, as the mere presence of files in the destination directory does not mean alignment has completed.
+The tool will begin by duplicating the scans in your source directory and placing them into the destination directory (before alignment begins). Use the progress bar to determine batch completion, as the mere presence of files in the destination directory does not mean alignment has completed.
 
 4. Browse to the destination directory to retrieve your aligned scans.
-
+---
 ### Command-line Usage
 
 Basic command:
@@ -85,7 +86,7 @@ This will:
 - Write aligned PNGs to `aligned/`
 - Write a `report.txt` log into `aligned/`
 
-### Command-line Options
+#### Command-line Options
 
 - `--holes-position top|bottom`  
   Default: `bottom`. Choose whether peg holes are at the top or bottom of the page.  
@@ -102,7 +103,7 @@ This will:
 - `--preview-delay <ms>`  
   Set time in milliseconds between preview frames (default: 500 aka .5 seconds).
 
-### Example
+##### Example Command
 
 ```bash
 python align_pages.py scans/ aligned/ --holes-position bottom --debug --preview --preview-delay 250
@@ -110,7 +111,7 @@ python align_pages.py scans/ aligned/ --holes-position bottom --debug --preview 
 
 ---
 
-## Output
+#### Output
 - `aligned/` folder with PNGs
 - `aligned/report.txt` containing success/error logs for each frame
 
@@ -137,4 +138,4 @@ frame002.png: ERROR - Failed to detect three holes on the page
 GNU General Public License v3.0
 
 ## Roadmap
-For now, this is a command-line tool that has only been tested and shown to work with _blank_ pages. The next step is to get feedback from beta testers using scans of 3-hole-punches pages with fully animated linework, and see what bugs pop up. I'm also in the process of making a GUI for the MacOS version. In the interest of shipping a working version, this MacOS version may launch without the preview and debug features.
+For now, this tool has only been tested and shown to work with _blank_, 3-hole punched pages. The next step is to get feedback from beta testers using scans of 3-hole-punches pages with fully animated linework, and see what bugs pop up. In the interest of shipping a working version, the GUI version for MacOS version does not support the preview and debug features of the command-line tool.
